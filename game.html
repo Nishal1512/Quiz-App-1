@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nature & Animals Quiz</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', sans-serif;
+      background: linear-gradient(to right, #a8edea, #fed6e3);
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 18px;
+      background: #81d4fa;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .options button:hover {
+      background: #4fc3f7;
+    }
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    #next-btn, #restart-btn {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 18px;
+      background-color: #43a047;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #next-btn:hover, #restart-btn:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <h1>Nature & Animals Quiz 🐾</h1>
+    <div class="question" id="question">Loading...</div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+    <button id="next-btn" onclick="nextQuestion()">Next</button>
+    <button id="restart-btn" onclick="restartQuiz()" style="display:none;">Restart Quiz</button>
+  </div>
+
+  <script>
+    const quizData = [
+      { q: "What animal says 'moo'?", o: ["Cat", "Cow", "Dog", "Duck"], a: "Cow" },
+      { q: "Which of these lives in the ocean?", o: ["Frog", "Shark", "Horse", "Bird"], a: "Shark" },
+      { q: "What do bees make?", o: ["Honey", "Milk", "Silk", "Butter"], a: "Honey" },
+      { q: "Which is a type of tree?", o: ["Rose", "Oak", "Lettuce", "Daisy"], a: "Oak" },
+      { q: "Which animal hops?", o: ["Elephant", "Kangaroo", "Fish", "Snake"], a: "Kangaroo" },
+      { q: "What color is the sky on a clear day?", o: ["Red", "Blue", "Green", "Orange"], a: "Blue" },
+      { q: "Where do penguins live?", o: ["Desert", "Jungle", "Cold places", "Mountains"], a: "Cold places" },
+      { q: "Which animal has a long neck?", o: ["Zebra", "Elephant", "Giraffe", "Monkey"], a: "Giraffe" },
+      { q: "What do plants need to grow?", o: ["Candy", "Sunlight", "Plastic", "Ice"], a: "Sunlight" },
+      { q: "Which of these can fly?", o: ["Lion", "Frog", "Bird", "Whale"], a: "Bird" },
+      { q: "What do cows eat?", o: ["Grass", "Meat", "Fish", "Candy"], a: "Grass" },
+      { q: "Which of these animals lays eggs?", o: ["Dog", "Cat", "Chicken", "Cow"], a: "Chicken" },
+      { q: "What is a baby dog called?", o: ["Kitten", "Cub", "Puppy", "Chick"], a: "Puppy" },
+      { q: "What do butterflies start as?", o: ["Worms", "Caterpillars", "Flies", "Ants"], a: "Caterpillars" },
+      { q: "What color are most leaves?", o: ["Red", "Blue", "Green", "Purple"], a: "Green" },
+      { q: "Which of these animals is the largest?", o: ["Elephant", "Mouse", "Goat", "Dog"], a: "Elephant" },
+      { q: "Which animal has stripes?", o: ["Elephant", "Zebra", "Hippo", "Rhino"], a: "Zebra" },
+      { q: "Which of these is not a mammal?", o: ["Whale", "Snake", "Cat", "Horse"], a: "Snake" },
+      { q: "Where do frogs live?", o: ["Desert", "Water and land", "Mountains", "Sky"], a: "Water and land" },
+      { q: "What do birds build to live in?", o: ["Huts", "Holes", "Nests", "Tents"], a: "Nests" },
+      { q: "What do squirrels eat?", o: ["Fish", "Nuts", "Meat", "Grass"], a: "Nuts" },
+      { q: "Which animal is known to roar?", o: ["Cat", "Lion", "Deer", "Cow"], a: "Lion" },
+      { q: "Which of these is a reptile?", o: ["Frog", "Snake", "Whale", "Rabbit"], a: "Snake" },
+      { q: "Which animal has a trunk?", o: ["Horse", "Elephant", "Zebra", "Lion"], a: "Elephant" },
+      { q: "What do flowers grow from?", o: ["Rocks", "Seeds", "Sticks", "Fruits"], a: "Seeds" },
+      { q: "Which of these can swim?", o: ["Dog", "Elephant", "Cat", "Giraffe"], a: "Dog" },
+      { q: "Which animal purrs?", o: ["Dog", "Cat", "Cow", "Horse"], a: "Cat" },
+      { q: "Which animal barks?", o: ["Lion", "Bird", "Dog", "Snake"], a: "Dog" },
+      { q: "Which of these has wings?", o: ["Elephant", "Ant", "Bird", "Fish"], a: "Bird" },
+      { q: "What grows underground?", o: ["Tree", "Potato", "Leaf", "Flower"], a: "Potato" },
+      { q: "Which of these is a farm animal?", o: ["Tiger", "Pig", "Whale", "Zebra"], a: "Pig" },
+      { q: "What do fish use to breathe?", o: ["Lungs", "Gills", "Skin", "Nose"], a: "Gills" },
+      { q: "Which of these is NOT a bird?", o: ["Eagle", "Penguin", "Bat", "Sparrow"], a: "Bat" },
+      { q: "What’s the tallest animal?", o: ["Elephant", "Kangaroo", "Giraffe", "Rhino"], a: "Giraffe" },
+      { q: "Which of these can fly?", o: ["Bat", "Cow", "Cat", "Sheep"], a: "Bat" },
+      { q: "What animal has black and white fur?", o: ["Zebra", "Lion", "Horse", "Tiger"], a: "Zebra" },
+      { q: "Which is a wild animal?", o: ["Goat", "Lion", "Cow", "Pig"], a: "Lion" },
+      { q: "What helps birds fly?", o: ["Feet", "Wings", "Nose", "Eyes"], a: "Wings" },
+      { q: "What comes from trees?", o: ["Milk", "Wood", "Meat", "Fish"], a: "Wood" },
+      { q: "Which is an insect?", o: ["Spider", "Bee", "Frog", "Cat"], a: "Bee" },
+      { q: "What animal is green and croaks?", o: ["Duck", "Cat", "Frog", "Lion"], a: "Frog" },
+      { q: "Where do ducks live?", o: ["Sky", "Water", "Desert", "Caves"], a: "Water" },
+      { q: "Which of these can you find in the jungle?", o: ["Shark", "Camel", "Monkey", "Seal"], a: "Monkey" },
+      { q: "What grows on trees?", o: ["Carrots", "Apples", "Potatoes", "Tomatoes"], a: "Apples" },
+      { q: "Which of these sleeps in caves?", o: ["Bat", "Horse", "Cow", "Dog"], a: "Bat" },
+      { q: "What do turtles have?", o: ["Shell", "Fur", "Feathers", "Wings"], a: "Shell" },
+      { q: "Which animal says 'quack'?", o: ["Duck", "Dog", "Cat", "Horse"], a: "Duck" },
+      { q: "What do animals drink?", o: ["Juice", "Milk", "Water", "Oil"], a: "Water" },
+      { q: "Which of these is NOT green?", o: ["Grass", "Frog", "Sky", "Leaf"], a: "Sky" }
+    ];
+
+    let shuffledQuestions = [], current = 0, score = 0;
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function loadQuestion() {
+      const q = shuffledQuestions[current];
+      document.getElementById('question').textContent = q.q;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      q.o.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(opt, q.a);
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById('result').textContent = '';
+    }
+
+    function selectAnswer(selected, correct) {
+      const result = document.getElementById('result');
+      if (selected === correct) {
+        result.textContent = "✅ Correct!";
+        score++;
+      } else {
+        result.textContent = `❌ Oops! Correct answer is "${correct}"`;
+      }
+      // Disable all buttons
+      Array.from(document.querySelectorAll('.options button')).forEach(b => b.disabled = true);
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < shuffledQuestions.length) {
+        loadQuestion();
+      } else {
+        showFinalScore();
+      }
+    }
+
+    function showFinalScore() {
+      document.getElementById('question').textContent = "🎉 Quiz Completed!";
+      document.getElementById('options').innerHTML = "";
+      document.getElementById('result').textContent = `Your score: ${score}/${shuffledQuestions.length}`;
+      document.getElementById('next-btn').style.display = 'none';
+      document.getElementById('restart-btn').style.display = 'inline-block';
+    }
+
+    function restartQuiz() {
+      current = 0;
+      score = 0;
+      shuffledQuestions = shuffle([...quizData]);
+      document.getElementById('next-btn').style.display = 'inline-block';
+      document.getElementById('restart-btn').style.display = 'none';
+      loadQuestion();
+    }
+
+    // Init
+    shuffledQuestions = shuffle([...quizData]);
+    loadQuestion();
+  </script>
+</body>
+</html>
